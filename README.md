@@ -8,9 +8,6 @@ email: livingstonreynoso@gmail.com
 -->
 
 
-
-
-
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
