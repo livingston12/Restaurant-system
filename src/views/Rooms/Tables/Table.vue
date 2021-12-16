@@ -48,7 +48,7 @@
 
           <v-card-text class="text-center"> {{ table.description }}</v-card-text>
           <v-card-actions class="text-center">
-            <v-btn color="deep-purple lighten-2" @click="reservar(table.tableId, table.table)">
+            <v-btn color="deep-purple accent-4" @click="reservar(table.tableId, table.table)">
               Reservar
             </v-btn>
           </v-card-actions>
