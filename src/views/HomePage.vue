@@ -7,6 +7,7 @@
       shrink-on-scroll
       src="https://picsum.photos/1920/1080?random"
       scroll-target="#scrolling-techniques-2"
+      dense
     >
       <template v-slot:img="{ props }">
         <v-img
@@ -15,7 +16,7 @@
         ></v-img>
       </template>
 
-      <v-app-bar-nav-icon></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click.stop="closeMenuBar(true)"></v-app-bar-nav-icon>
 
       <v-app-bar-title>Title</v-app-bar-title>
 
@@ -38,23 +39,30 @@
       class="overflow-y-auto"
       max-height="700"
     >
-      <v-container :fluid=true><router-view/></v-container>
+    <MenuBar :isOpen="visibleMenuBar" @oncloseMenuBar="closeMenuBar"></MenuBar>
+      <v-container style="margin-top:100px;padding-bottom:10px" :fluid=true><router-view/></v-container>
     </v-sheet>
   </v-card>
   
 </template>
 
 <script>
-//import Rooms from './Rooms/Room.vue';
+import MenuBar from '../components/MenuBar'
 
 export default {
   name: "Home",
   components: {
-    //Rooms
+    MenuBar
   },
   data() {
     return {
+      visibleMenuBar: false,
     };
-  }
+  },
+  methods: {
+    closeMenuBar(isOpen) {
+      this.visibleMenuBar = isOpen;
+    }
+  },
 };
 </script>

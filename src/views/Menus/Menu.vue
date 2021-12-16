@@ -3,7 +3,6 @@
     elevation="14"
     shaped
     outlined
-    style="margin-top:150px;padding-bottom:10px"
     class="mx-auto"
   >
     <v-row class="pl-4">
