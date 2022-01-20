@@ -45,16 +45,22 @@
 </template>
 
 <script>
-//import Rooms from './Rooms/Room.vue';
+import MenuBar from '../components/MenuBar'
 
 export default {
   name: "Home",
   components: {
-    //Rooms
+    MenuBar
   },
   data() {
     return {
+      visibleMenuBar: false,
     };
-  }
+  },
+  methods: {
+    closeMenuBar(isOpen) {
+      this.visibleMenuBar = isOpen;
+    }
+  },
 };
 </script>
