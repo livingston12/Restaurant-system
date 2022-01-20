@@ -2,10 +2,12 @@
  <v-card class="overflow-hidden">
     <v-app-bar
       absolute
-      color="#fcb69f"      
+      color="#fcb69f"
+      dark
       shrink-on-scroll
       src="https://picsum.photos/1920/1080?random"
       scroll-target="#scrolling-techniques-2"
+      dense
     >
       <template v-slot:img="{ props }">
         <v-img
