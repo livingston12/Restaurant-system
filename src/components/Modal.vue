@@ -6,14 +6,15 @@
         max-width="600"
         v-model="isOpen"
         persistent
+        
       >
         <template>
-          <v-card>
-            <v-toolbar :color="color" dark>
+          <v-card shaped>
+            <v-toolbar :color="color" class="text-h5">
               {{ title }}</v-toolbar
             >
             <v-card-text>
-              <ul v-if="type === 'error'" class="pt-2">
+              <ul v-if="type === 'error' || type === ''" class="pt-2 ul-no-decoration">
                 <li class="text-h6" v-for="error in errors" :key="error">
                   <span v-html="error"></span>
                 </li>
@@ -68,6 +69,9 @@ export default {
   },
 };
 </script>
-
-<style>
+<style >
+ .ul-no-decoration {
+   list-style-type: none;
+ }
 </style>
+

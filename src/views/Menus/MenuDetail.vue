@@ -12,8 +12,8 @@
         <h3>Elegir cliente</h3>
       </v-col>
       <v-col sm="2" class="text-right">
-        <v-btn fab dark small color="primary">
-          <v-icon dark> mdi-account-plus </v-icon>
+        <v-btn fab small color="primary">
+          <v-icon> mdi-account-plus </v-icon>
         </v-btn>
       </v-col>
     </v-row>
@@ -161,6 +161,7 @@
           color="success"
           rounded
           :loading="isLoading"
+          :disabled="isLoading"
           @click="IsReserved ? closeOrder() : reserveTable()"
         >
           {{ TitleReserved }}
@@ -208,9 +209,6 @@ export default {
       required: require
     }
   },
-  updated() {
-    //console.log("Entro");
-  },
   mounted() {
     this.initialData();
     let clients = this.clients;
@@ -232,7 +230,6 @@ export default {
       value: "0"
     });
     this.clients = clients;
-
   },
   data() {
     return {
@@ -530,8 +527,8 @@ export default {
     },
     goToRoom() {
       this.cancelOrder();
-      this.$router.push({ name: 'Room'});
-    },
+      this.$router.push({ name: "Room" });
+    }
   }
 };
 </script>

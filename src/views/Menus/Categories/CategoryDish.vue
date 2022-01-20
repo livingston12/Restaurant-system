@@ -5,7 +5,7 @@
         class="rounded-t-xl"
         max-width="200"
         elevation="8"
-        max-height="100"
+        max-height="100"        
       >
         <template slot="progress">
           <v-progress-linear color="deep-purple" height="10" indeterminate />
@@ -86,13 +86,13 @@ export default {
     this.getDishesAsync();
   },
   methods: {
-    ...mapActions("api", ["getDishes", "setOrderItem"]),
-    ...mapGetters("api", ["allDishes", "allOrderItems"]),
+    ...mapActions("api", ["getDishesByCategory", "setOrderItem"]),
+    ...mapGetters("api", ["allDishesByCategory", "allOrderItems"]),
     getURLImage: getURLImage,
     async getDishesAsync() {
       this.isLoadingDishes = true;
-      await this.getDishes(this.categoryId);
-      const dishes = this.allDishes();
+      await this.getDishesByCategory(this.categoryId);
+      const dishes = this.allDishesByCategory();
       this.dishesItem = dishes.list ? dishes.list : [];
       if( this.isFilteredDish) {
         this.dishesItem = this.dishesItem.filter(x => x.dishId == this.dishId);

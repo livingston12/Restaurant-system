@@ -11,7 +11,7 @@
         <v-col cols="6" sm="12">
           <template slot="progress">
             <v-progress-linear
-              color="deep-purple"
+              color="primary"
               height="8"
               indeterminate
             ></v-progress-linear>
@@ -48,7 +48,7 @@
 
           <v-card-text class="text-center"> {{ table.description }}</v-card-text>
           <v-card-actions class="text-center">
-            <v-btn color="deep-purple lighten-2" @click="reservar(table.tableId, table.table)">
+            <v-btn color="primary" @click="reservar(table.tableId, table.table)">
               Reservar
             </v-btn>
           </v-card-actions>
@@ -59,6 +59,7 @@
   </v-card>
 </template>
 <script>
+
 export default {
   name: "Table",
   data() {

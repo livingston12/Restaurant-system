@@ -13,10 +13,9 @@
       <v-col md="7">
         <v-tabs
           v-model="currentTab"
-          color="deep-purple accent-4"
+          class="primary"
           centered
-          background-color="primary"
-          dark
+          background-color="primary"          
         >
           <v-tab v-for="Menu in menus" :key="Menu.menuId">
             {{ Menu.menu }}
@@ -38,6 +37,7 @@
 import { mapActions, mapGetters } from "vuex";
 import Category from "./Categories/Category";
 import MenuDetail from "./MenuDetail";
+
 export default {
   name: "Menu",
   components: {

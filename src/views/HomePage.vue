@@ -2,8 +2,7 @@
  <v-card class="overflow-hidden">
     <v-app-bar
       absolute
-      color="#fcb69f"
-      dark
+      color="#fcb69f"      
       shrink-on-scroll
       src="https://picsum.photos/1920/1080?random"
       scroll-target="#scrolling-techniques-2"
@@ -38,7 +37,8 @@
       class="overflow-y-auto"
       max-height="700"
     >
-      <v-container :fluid=true><router-view/></v-container>
+    <MenuBar :isOpen="visibleMenuBar" @oncloseMenuBar="closeMenuBar"></MenuBar>
+      <v-container style="margin-top:100px;padding-bottom:10px;" :fluid=true><router-view/></v-container>
     </v-sheet>
   </v-card>
   
