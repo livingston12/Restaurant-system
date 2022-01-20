@@ -4,11 +4,10 @@
     @input="needCloseModal" 
     absolute
     temporary
-    class="deep-purple accent-4"
-    dark
+    class="primary"    
   >
     <v-list dense>
-      <v-list-item v-for="item in data" :key="item.title" link>
+      <v-list-item v-for="item in data" :key="item.title" link @click="goToPage(item.view)">
         <v-list-item-icon>
           <v-icon>{{ item.icon }}</v-icon>
         </v-list-item-icon>
@@ -28,18 +27,15 @@ export default {
       type: Boolean,
       required: false,
       default: () => false
-    }
+    },  
   },
-  watch: {
-    isOpen: {
-      handler() {
-        this.drawer = this.isOpen;
-      },
-    }
-  },
-  computed: {
-    
-  },
+    watch: {
+      isOpen: {
+        handler() {
+          this.drawer = this.isOpen
+        }
+      }
+    },
   data() {
     return {
       data: [
@@ -57,7 +53,13 @@ export default {
         },
         {
           icon: "mdi-food",
-          title: "Ventas con reservas"
+          title: "Mesas",
+          view: "Room"
+        },
+        {
+          icon: "mdi-food",
+          title: "Inventario",
+          view: "Inventory"
         },
         {
           icon: "mdi-chart-bar",
@@ -68,7 +70,7 @@ export default {
           title: "Deliverys"
         }
       ],
-      drawer: false,
+      drawer: this.isOpen,
     };
   },
   methods: {
@@ -79,6 +81,9 @@ export default {
       if (!isOpen) {
         this.oncloseMenuBar();
       }
+    },
+    goToPage(view) {
+      this.$router.push({ name: view });
     }
   }
 };

@@ -315,3 +315,65 @@ export const numberFormat = (number, decimals, dec_point, thousands_point) => {
 
   return number;
 }
+
+export function removeItemFromArray(array, index) {
+  array.splice(index, 1);
+  return array;
+}
+
+export function validateForm(formData) {
+  let isError = false;
+
+  Object.keys(formData).forEach(f => {
+    if (!formData) {
+      isError = true;
+    }
+    isError = this.$refs[f].validate(true);
+  });
+  return !isError;
+}
+
+export function resetForm(formData) {
+  Object.keys(formData).forEach(f => {
+    this.$refs[f].reset();
+  });
+}
+
+export function returnError(data, message, statusCode) {
+  const dataError = 
+  {
+    isOpen: true,
+    modalType: '',
+    isErorr: false,
+    errors: [],
+    title: "Error inesperado",
+    color: "red",
+  };
+  let listErrors = [];
+
+  if (data) {
+    const { errors } = data;
+    listErrors = Object.values(errors);
+    if (listErrors.length > 0) {
+      dataError.modalType = "list";
+      dataError.isErorr = true;
+      dataError.errors = listErrors;
+    } else if (statusCode === "201") {
+      listErrors.push(message);
+      dataError.isErorr = true;
+      dataError.errors = listErrors;
+      dataError.color = "green";
+      dataError.title = "";
+    } else {
+      listErrors.push(message);
+      dataError.isErorr = true;
+      dataError.errors = listErrors;
+    }
+  } else {
+    listErrors.push(message);
+    dataError.isErorr = true;
+    dataError.errors = listErrors;
+  }
+  return dataError;
+}
+

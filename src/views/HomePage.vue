@@ -40,7 +40,7 @@
       max-height="700"
     >
     <MenuBar :isOpen="visibleMenuBar" @oncloseMenuBar="closeMenuBar"></MenuBar>
-      <v-container style="margin-top:100px;padding-bottom:10px" :fluid=true><router-view/></v-container>
+      <v-container style="margin-top:100px;padding-bottom:10px;" :fluid=true><router-view/></v-container>
     </v-sheet>
   </v-card>
   
