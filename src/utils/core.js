@@ -377,3 +377,11 @@ export function returnError(data, message, statusCode) {
   return dataError;
 }
 
+export function maxArray(array) {
+  return Math.max(...array);
+}
+
+export function sumArray(array) {
+  const reducer = (previousValue, currentValue) => previousValue + currentValue;
+  return array.reduce(reducer);
+}

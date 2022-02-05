@@ -431,8 +431,15 @@ export default {
     },
     async reserveTable() {
       this.isLoading = true;
+      const detail = this.ListItems.map(x => {
+        return {
+          dishId: x.dishId,
+          quantity: x.quantity
+        };
+      });
       var data = {
-        tableId: this.tableId
+        tableId: this.tableId,
+        orderDetail: detail
       };
       await axios(`${this.urlPandora()}/Tables/reserved`, {
         method: "POST",
@@ -443,9 +450,6 @@ export default {
       })
         .then(({ data }) => {
           if (data === true) {
-            this.getTables(this.tableId);
-            this.currentDataTable = this.getCurrentTableData();
-
             this.dataError.isErorr = true;
             this.dataError.errors.push("La mesa se reservo correctamente");
             this.dataError.color = "green";
@@ -467,6 +471,8 @@ export default {
         })
         .finally(() => {
           this.isLoading = false;
+          this.getTables(this.tableId);
+          this.currentDataTable = this.getCurrentTableData();
         });
     },
     validateError() {
@@ -492,13 +498,11 @@ export default {
       }
       return isError;
     },
-    closedModal(isGoingTo) {
-      this.dataError.isErorr = false;
-      this.clearData();
-
-      if (isGoingTo && this.IsReserved) {
+    closedModal() {
+      if (!this.dataError.isErorr && this.IsReserved) {
         this.goToRoom();
       }
+      this.clearData();
       this.initialData();
     },
     clearData() {

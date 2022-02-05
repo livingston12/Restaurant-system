@@ -25,7 +25,11 @@ export const PAYMENT_METHODS = [
   {
     paymentMethod: "Tarjeta",
     paymentMethodId: "T"
-  }
+  },
+  {
+    paymentMethod: "Cheque",
+    paymentMethodId: "C"
+  },
 ]
 
 export const DATA_ERROR = {  
@@ -45,4 +49,5 @@ export const RULES = {
   min: (num, min) => num >= min || `El valor minimo es ${min}`,
   len: (num, min) => num >= min || `La cantidad minima de letras es ${min}`,
 }
+
 

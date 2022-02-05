@@ -17,6 +17,7 @@
     <v-data-table
       :headers="headers"
       :items="data.list"
+      :items-per-page.sync="pageSize"
       :single-expand="true"
       :expanded.sync="expanded"
       item-key="dishId"
@@ -29,6 +30,8 @@
       fixed-header
       sort-by-text="Ordenar por"
       :loading="isLoadingTable"
+      hide-default-footer
+      :page.sync="page"
     >
       <template v-slot:top>
         <v-toolbar flat>
@@ -108,6 +111,15 @@
         </v-icon>
       </template>
     </v-data-table>
+    <v-row class="text-center px-4 align-center" wrap>
+      <v-col cols="12" sm="12">
+        <v-pagination
+          @input="paginateUpdate"
+          :length="TotalPage"
+          v-model="page"
+        />
+      </v-col>
+    </v-row>
     <HeaderInventoryUpdate
       :isOpen="isUpdateHeader"
       :data="currentDish"
@@ -184,11 +196,20 @@ export default {
       dataError: {...DATA_ERROR},
       currentDetailId: 0,
       typeApproval: APPROVALS.DISH,
+      pageSize: 10,
+      page: 1,
     };
+  },
+  computed: {
+    TotalPage() {
+      const data = this.data;
+
+      return data ? data.totalPage : 10;
+    },
   },
   async mounted() {
     await this.getAllDishes();
-    this.data = this.listDishes();
+    this.data = this.listDishes();    
   },
   methods: {
     ...mapGetters("api", ["currentIngredients", "listDishes", "urlPandora"]),
@@ -329,7 +350,11 @@ export default {
       this.isUpdate = false;
       this.dataError = {...DATA_ERROR};
       this.expanded = [];
-    }
+    },
+    async paginateUpdate(page) {
+      await this.getAllDishes(page);
+      this.data = this.listDishes();
+    },
   }
 };
 </script>

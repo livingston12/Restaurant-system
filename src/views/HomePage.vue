@@ -1,14 +1,6 @@
 <template>
- <v-card class="overflow-hidden">
-    <v-app-bar
-      absolute
-      color="#fcb69f"
-      dark
-      shrink-on-scroll
-      src="https://picsum.photos/1920/1080?random"
-      scroll-target="#scrolling-techniques-2"
-      dense
-    >
+  <v-card class="overflow-hidden">
+    <v-app-bar color="primary" dark dense>
       <template v-slot:img="{ props }">
         <v-img
           v-bind="props"
@@ -18,17 +10,9 @@
 
       <v-app-bar-nav-icon @click.stop="closeMenuBar(true)"></v-app-bar-nav-icon>
 
-      <v-app-bar-title>Title</v-app-bar-title>
+      <v-app-bar-title>{{ Restaurant }}</v-app-bar-title>
 
       <v-spacer></v-spacer>
-
-      <v-btn icon>
-        <v-icon>mdi-magnify</v-icon>
-      </v-btn>
-
-      <v-btn icon>
-        <v-icon>mdi-heart</v-icon>
-      </v-btn>
 
       <v-btn icon>
         <v-icon>mdi-dots-vertical</v-icon>
@@ -39,30 +23,39 @@
       class="overflow-y-auto"
       max-height="700"
     >
-    <MenuBar :isOpen="visibleMenuBar" @oncloseMenuBar="closeMenuBar"></MenuBar>
-      <v-container style="margin-top:100px;padding-bottom:10px;" :fluid=true><router-view/></v-container>
+      <MenuBar
+        :isOpen="visibleMenuBar"
+        @oncloseMenuBar="closeMenuBar"
+      ></MenuBar>
+      <v-container :fluid="true"><router-view /></v-container>
     </v-sheet>
   </v-card>
-  
 </template>
 
 <script>
-import MenuBar from '../components/MenuBar'
+import MenuBar from "../components/MenuBar";
+import { mapGetters } from "vuex";
 
 export default {
   name: "Home",
   components: {
     MenuBar
   },
+  computed: {
+    Restaurant() {
+      return this.currentUser().restaurant;
+    }
+  },
   data() {
     return {
-      visibleMenuBar: false,
+      visibleMenuBar: false
     };
   },
   methods: {
+    ...mapGetters("api", ["currentUser"]),
     closeMenuBar(isOpen) {
       this.visibleMenuBar = isOpen;
     }
-  },
+  }
 };
 </script>
