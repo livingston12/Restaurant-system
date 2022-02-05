@@ -6,7 +6,7 @@
   >
     <v-tabs
       v-model="currentTab"
-      color="deep-purple accent-4"
+      color="teal"
       centered
     >
         <v-tab 

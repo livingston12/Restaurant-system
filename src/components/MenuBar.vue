@@ -99,10 +99,6 @@ export default {
           title: "Inventario",
           view: "Inventory"
         }
-        //{
-        //icon: "mdi-moped",
-        //title: "Deliverys"
-        //}
       ],
       drawer: this.isOpen,
       reports: [["mdi-cash", "Reporte de ventas", "ReportSales"]]

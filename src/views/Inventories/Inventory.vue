@@ -209,7 +209,7 @@ export default {
   },
   async mounted() {
     await this.getAllDishes();
-    this.data = this.listDishes();    
+    this.data = this.listDishes();
   },
   methods: {
     ...mapGetters("api", ["currentIngredients", "listDishes", "urlPandora"]),
