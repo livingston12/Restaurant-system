@@ -31,8 +31,8 @@
   </v-card>
 </template>
 <script>
-import axios from "axios";
-import Table from "./Tables/Table.vue";
+import Table from "./Tables/Table";
+import { mapActions, mapGetters } from 'vuex';
 export default {
   name: "left-nav",
   components: {
@@ -44,49 +44,16 @@ export default {
       loading: false,
       img: require("@/assets/mesaReservada.jpg"),
       currentTab: null,
-      tables: [],
     };
   },
-  mounted() {
-    this.getAsyncRooms();
+  async mounted() {
+    await this.getAllRooms();
+    const { list } = this.allRooms();
+    this.rooms = list;
   },
   methods: {
-    async getAsyncRooms() {
-      await axios
-        .get(`https://localhost:5001/api/v1/rooms`)
-        .then(response => {
-          if (response.status === 204) {
-            //this.showWarnings('Account Branches: No content');
-          } else {
-            this.rooms = response.data.list;
-          }
-        })
-        .catch(() => {
-          // handle errors
-          //this.showErrors(`Account Branches: ${error}`);
-        })
-        .finally(() => {
-          // always executed
-        });
-    },
-    async getAsyncTables(RoomId) {
-      await axios
-        .get(`https://localhost:5001/api/v1/rooms/${RoomId}/Tables`)
-        .then(response => {
-          if (response.status === 204) {
-            //this.showWarnings('Account Branches: No content');
-          } else {
-            this.tables = response.data.list;
-          }
-        })
-        .catch(() => {
-          // handle errors
-          //this.showErrors(`Account Branches: ${error}`);
-        })
-        .finally(() => {
-          // always executed
-        });
-    },
-  }
+    ...mapActions('api', ['getAllRooms']),
+    ...mapGetters('api', ['allRooms']),
+  },
 };
 </script>

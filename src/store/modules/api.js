@@ -16,7 +16,7 @@ const state = {
     restaurantId: 1,
     restaurant: "The jeison Food Truck"
   },
-  urlPandora: "https://localhost:5001/api/v1",
+  urlPandora: process.env.VUE_APP_PANDORA_API_URL,
   categories: {},
   menus: {},
   dishes: {},
@@ -32,7 +32,8 @@ const state = {
   allIngredients: [],
   allTotalTables: [],
   allTotalDelivery: [],
-  listInvoices: []
+  listInvoices: [],
+  rooms: [],
 };
 
 const getters = {
@@ -48,6 +49,7 @@ const getters = {
   allOrderItems(state) {
     return state.ordersItems.filter(x => x.tableId === state.currentTableId);
   },
+  allRooms: state => state.rooms,
   getOrderItem(state, dishId) {
     return state.ordersItems.find(
       x => x.dishId === dishId && x.tableId === state.currentTableId
@@ -144,6 +146,13 @@ const actions = {
       .get(`${state.urlPandora}/Ingredients/summary/${restaurantId}`)
       .then(response => commit("SET_ALL_INGREDIENTS", response.data))
       .catch(err => console.error(err));
+  },
+  async getAllRooms({ commit }) {
+    const restaurantId = state.currentUser.restaurantId;
+    await axios
+    .get(`${state.urlPandora}/Rooms/summary?restaurantId=${restaurantId}`)
+    .then(response => commit("SET_ALL_ROOMS", response.data))
+    .catch(err => console.error(err));
   },
   async getTotalOrderByTables({ commit }, dates) {
     const restaurantId = state.currentUser.restaurantId;
@@ -432,6 +441,9 @@ const mutations = {
       invoices.list = formatInvoices;
       state.listInvoices = { ...invoices };
     }
+  },
+  SET_ALL_ROOMS(state, rooms) {
+    state.rooms = rooms;
   }
 };
 
