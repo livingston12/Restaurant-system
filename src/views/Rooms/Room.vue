@@ -2,19 +2,18 @@
   <v-card
   elevation="14"
   shaped
-  outlined
-  
+  outlined  
   >
     <v-tabs
       v-model="currentTab"
-      class="primary"
+      color="teal"
       centered
     >
         <v-tab 
             v-for="Room in rooms"
             :key="Room.roomId"
         >
-            <span class="white--text">{{ Room.room }}</span>
+            {{ Room.room }}
         </v-tab>
     </v-tabs>
     <v-tabs-items 
@@ -34,7 +33,6 @@
 <script>
 import axios from "axios";
 import Table from "./Tables/Table.vue";
-
 export default {
   name: "left-nav",
   components: {

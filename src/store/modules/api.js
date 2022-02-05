@@ -1,5 +1,11 @@
 import axios from "axios";
-import { getSpecificDate } from "@/utils/core";
+import {
+  getSpecificDate,
+  numberFormat,
+  stringToDatetime,
+  dateFormat
+} from "@/utils/core";
+import { PAYMENT_METHODS } from "@/utils/consts";
 
 const HOURS_TO_ADD = 1;
 
@@ -24,6 +30,9 @@ const state = {
   listcategories: [],
   currentIngredients: [],
   allIngredients: [],
+  allTotalTables: [],
+  allTotalDelivery: [],
+  listInvoices: []
 };
 
 const getters = {
@@ -49,7 +58,10 @@ const getters = {
   getCurrentTableId: state => state.currentTableId,
   getCurrentTable: state => state.currentTable,
   getCurrentTableData: state => state.currentTableData,
-  urlPandora: state => state.urlPandora
+  urlPandora: state => state.urlPandora,
+  listOrderByTables: state => state.allTotalTables,
+  listOrderByDelivery: state => state.allTotalDelivery,
+  listInvoices: state => state.listInvoices
 };
 
 const actions = {
@@ -86,9 +98,15 @@ const actions = {
       .then(response => commit("SET_DISHES", response.data))
       .catch(err => console.error(err));
   },
-  async getAllDishes({ commit }) {
+  async getAllDishes({ commit }, pageIndex) {
+    let page = 1;
+
+    if (pageIndex) {
+      page = pageIndex;
+    }
+
     await axios
-      .get(`${state.urlPandora}/Dishes`)
+      .get(`${state.urlPandora}/Dishes?PageIndex=${page}`)
       .then(response => commit("SET_ALL_DISHES", response.data))
       .catch(err => console.error(err));
   },
@@ -121,9 +139,83 @@ const actions = {
       .catch(err => console.error(err));
   },
   async getAllIngredients({ commit }) {
+    const restaurantId = state.currentUser.restaurantId;
     await axios
-      .get(`${state.urlPandora}/Ingredients/summary/${state.currentUser.restaurantId}`)
+      .get(`${state.urlPandora}/Ingredients/summary/${restaurantId}`)
       .then(response => commit("SET_ALL_INGREDIENTS", response.data))
+      .catch(err => console.error(err));
+  },
+  async getTotalOrderByTables({ commit }, dates) {
+    const restaurantId = state.currentUser.restaurantId;
+    let dateFrom = "";
+    let dateTo = "";
+    let options = "";
+
+    if (dates) {
+      dateFrom = dates.dateFrom;
+      dateTo = dates.dateTo;
+    }
+
+    if (dateFrom) {
+      options = "&DateFrom=" + dateFrom;
+    }
+    if (dateTo) {
+      options += "&DateTo=" + dateTo;
+    }
+
+    await axios
+      .get(
+        `${state.urlPandora}/Orders/TotalsByTables?RestaurantId=${restaurantId}${options}`
+      )
+      .then(response => commit("SET_ALL_TOTAL_TABLES", response.data))
+      .catch(err => console.error(err));
+  },
+  async getTotalOrderByDelivery({ commit }, dates) {
+    const restaurantId = state.currentUser.restaurantId;
+    let dateFrom = "";
+    let dateTo = "";
+    let options = "";
+
+    if (dates) {
+      dateFrom = dates.dateFrom;
+      dateTo = dates.dateTo;
+    }
+
+    if (dateFrom) {
+      options = "&DateFrom=" + dateFrom;
+    }
+    if (dateTo) {
+      options += "&DateTo=" + dateTo;
+    }
+
+    await axios
+      .get(
+        `${state.urlPandora}/Orders/TotalsByDelivery?RestaurantId=${restaurantId}${options}`
+      )
+      .then(response => commit("SET_ALL_TOTAL_DELIVERY", response.data))
+      .catch(err => console.error(err));
+  },
+  async getInvoices({ commit }, data) {
+    let page = 1;
+    let options = "";
+
+    if (data) {
+      if (data.page) {
+        page = data.page;
+      }
+      if (data.dateFrom) {
+        options = "&DateFrom=" + data.dateFrom;
+      }
+      if (data.dateTo) {
+        options += "&DateTo=" + data.dateTo;
+      }
+    }
+
+    await axios
+      .get(
+        `${state.urlPandora}/Invoices?RestaurantId=${state.currentUser.restaurantId}&PageIndex=${page}${options}`
+      )
+      .then(response => commit("SET_INVOICES", response.data))
       .catch(err => console.error(err));
   },
   removeOrderItem({ commit }, data) {
@@ -134,9 +226,8 @@ const actions = {
       .get(`${state.urlPandora}/Images/${data.directory}/${data.fileName}`)
       .then(response => commit("SET_IMAGES", response.data))
       .catch(err => console.error(err));
-  },  
-  async upadateIngredient({ commit }, data) 
-  {
+  },
+  async upadateIngredient({ commit }, data) {
     const response = await axios(
       `${state.urlPandora}/Dishes`,
       {
@@ -194,8 +285,7 @@ const actions = {
     }
     return response;
   },
-  async addDishDetailAsync({ dispatch }, data) 
-  {
+  async addDishDetailAsync({ dispatch }, data) {
     const response = await axios(
       `${state.urlPandora}/Dishes/details`,
       {
@@ -252,7 +342,7 @@ const mutations = {
     };
   },
   SET_ALL_DISHES(state, dishes) {
-    state.listDishes = dishes;   
+    state.listDishes = dishes;
   },
   SET_IMAGES(state, images) {
     state.images = images;
@@ -294,7 +384,7 @@ const mutations = {
     const findItem = state.ordersItems.findIndex(
       order => order.tableId === data.tableId && order.dishId === data.dishId
     );
-    state.ordersItems.splice(findItem);
+    state.ordersItems.splice(findItem, 1);
   },
   SET_TABLES(state, data) {
     const [table] = data;
@@ -315,8 +405,33 @@ const mutations = {
   SET_INGREDIENTS(state, ingredients) {
     state.currentIngredients = ingredients;
   },
-  SET_ALL_INGREDIENTS(state, ingredients){
+  SET_ALL_INGREDIENTS(state, ingredients) {
     state.allIngredients = ingredients;
+  },
+  SET_ALL_TOTAL_TABLES(state, totalTables) {
+    state.allTotalTables = totalTables;
+  },
+  SET_ALL_TOTAL_DELIVERY(state, totalDelivery) {
+    state.allTotalDelivery = totalDelivery;
+  },
+  SET_INVOICES(state, invoices) {
+    state.listInvoices = {};
+    if (invoices) {
+      const formatInvoices = invoices.list.map(e => {
+        e.order.total = numberFormat(e.order.total, 2);
+        e.order.discount = numberFormat(e.order.discount, 2);
+        e.order.tax = numberFormat(e.order.tax, 2);
+        e.order.placementDate = dateFormat(
+          stringToDatetime(e.order.placementDate)
+        );
+        e.paymentMethod = PAYMENT_METHODS.find(
+          x => x.paymentMethodId == e.paymentMethod
+        ).paymentMethod;
+        return e;
+      });
+      invoices.list = formatInvoices;
+      state.listInvoices = { ...invoices };
+    }
   }
 };
 
