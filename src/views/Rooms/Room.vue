@@ -2,7 +2,8 @@
   <v-card
   elevation="14"
   shaped
-  outlined  
+  outlined
+  class="px-5"
   >
     <v-tabs
       v-model="currentTab"
