@@ -199,6 +199,10 @@ function getStringCommas(objArray) {
   return value.replaceAll(",", " - ");
 }
 
+export function getStringBySeparator(array, separator) {
+  return array.join(separator);
+}
+
 export function findItemInArray(object, searhValue) {
   const objKey = Object.keys(object).findIndex(function(el) {
     return el.toLowerCase().indexOf(searhValue.toString().toLowerCase()) > -1;
@@ -277,9 +281,9 @@ export function getURLImage(typeId, fileName, urlPandora, typeImgages) {
 }
 
 export function isNumbered(value) {
-  value = (value) ? value : window.event;
-  var charCode = (value.which) ? value.which : value.keyCode;
-  if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
+  value = value ? value : window.event;
+  var charCode = value.which ? value.which : value.keyCode;
+  if (charCode > 31 && (charCode < 48 || charCode > 57) && charCode !== 46) {
     value.preventDefault();
   } else {
     return true;
@@ -287,22 +291,21 @@ export function isNumbered(value) {
 }
 
 export const numberFormat = (number, decimals, dec_point, thousands_point) => {
-
   if (number === null || !isFinite(number)) {
-      throw new TypeError("number is not valid");
+    throw new TypeError("number is not valid");
   }
 
   if (!decimals) {
-      var len = number.toString().split('.').length;
-      decimals = len > 1 ? len : 0;
+    var len = number.toString().split(".").length;
+    decimals = len > 1 ? len : 0;
   }
 
   if (!dec_point) {
-      dec_point = '.';
+    dec_point = ".";
   }
 
   if (!thousands_point) {
-      thousands_point = ',';
+    thousands_point = ",";
   }
 
   number = parseFloat(number).toFixed(decimals);
@@ -314,7 +317,7 @@ export const numberFormat = (number, decimals, dec_point, thousands_point) => {
   number = splitNum.join(dec_point);
 
   return number;
-}
+};
 
 export function removeItemFromArray(array, index) {
   array.splice(index, 1);
@@ -340,14 +343,13 @@ export function resetForm(formData) {
 }
 
 export function returnError(data, message, statusCode) {
-  const dataError = 
-  {
+  const dataError = {
     isOpen: true,
-    modalType: '',
+    modalType: "",
     isErorr: false,
     errors: [],
     title: "Error inesperado",
-    color: "red",
+    color: "red"
   };
   let listErrors = [];
 

@@ -44,8 +44,7 @@
                 :value="item.quantity"
                 @change="updateQuantity($event, item.dishId)"
                 @keypress="isNumbered($event)"
-              >
-              </v-text-field>
+              />
             </p>
           </template>
           <template v-slot:[`item.price`]="{ item }">
@@ -53,6 +52,18 @@
           </template>
           <template v-slot:[`item.total`]="{ item }">
             {{ numberFormat(item.total, 2) }}
+          </template>
+          <template v-slot:[`item.note`]="{ item }">
+            <p class="center-input">
+              <v-textarea
+                solo
+                label="nota"
+                :value="item.note"
+                @change="updateNote($event, item.dishId)"
+                dense
+                rows="2"
+              />
+            </p>
           </template>
           <template v-slot:[`item.dishId`]="{ item }">
             <v-icon
@@ -209,10 +220,10 @@ export default {
       required: require
     }
   },
-  mounted() {
+  async mounted() {
     this.initialData();
     let clients = this.clients;
-    this.getAllClients();
+    await this.getAllClients();
 
     if (clients.length === 0) {
       const { list } = this.allClients();
@@ -252,7 +263,8 @@ export default {
           clientId: null,
           userId: null,
           paymentMethod: ""
-        }
+        },
+        garrisons: []
       },
       currentPaymentMethod: null,
       currentClient: "0",
@@ -269,7 +281,7 @@ export default {
           align: "start",
           sortable: false,
           value: "dish",
-          width: 275,
+          width: 200,
           class: "primary white--text"
         },
         {
@@ -294,6 +306,14 @@ export default {
           sortable: false,
           value: "total",
           width: 50,
+          class: "primary white--text"
+        },
+        {
+          text: "Nota",
+          align: "start",
+          sortable: false,
+          value: "note",
+          width: 200,
           class: "primary white--text"
         },
         {
@@ -325,10 +345,16 @@ export default {
       return this.allOrderItems();
     },
     IsReserved() {
-      return this.currentDataTable.isReserved;
+      const isReserved = this.currentDataTable
+        ? this.currentDataTable.isReserved
+        : false;
+      return isReserved;
     },
     TitleReserved() {
-      return this.IsReserved ? "Procesar" : "Reservar";
+      const isReserved = this.currentDataTable
+        ? this.currentDataTable.isReserved
+        : false;
+      return isReserved ? "Procesar" : "Reservar";
     }
   },
   methods: {
@@ -343,6 +369,7 @@ export default {
     ]),
     ...mapActions("api", [
       "updateOrderQuantity",
+      "updateOrderNote",
       "cancelOrder",
       "processOrden",
       "removeOrderItem",
@@ -357,6 +384,13 @@ export default {
         id
       };
       this.updateOrderQuantity(item);
+    },
+    updateNote(note, dishId) {
+      const item = {
+        note,
+        dishId
+      };
+      this.updateOrderNote(item);
     },
     removeItem({ dishId, tableId }) {
       const data = {
@@ -388,15 +422,24 @@ export default {
       this.order.invoice.paymentMethod = paymentMethodId;
 
       const orderDetail = this.ListItems.map(item => {
-        const { quantity, price, dishId } = item;
+        const { quantity, price, dishId, note } = item;
         const currentItem = {
           quantity: quantity,
           price: price,
-          dishId: dishId
+          dishId: dishId,
+          note: note
         };
         return currentItem;
       });
       this.order.ordersDetail.push(...orderDetail);
+
+      this.ListItems.forEach(item => {
+        const { garrisons } = item;
+        if (garrisons) {
+          this.order.garrisons.push(...garrisons);
+        }
+      });
+
       this.order.restaurantId = this.currentUser().restaurantId;
       const {
         data: { data, message, statusCode }
@@ -499,7 +542,7 @@ export default {
       return isError;
     },
     closedModal() {
-      if (!this.dataError.isErorr && this.IsReserved) {
+      if (this.dataError.color == "green" && this.IsReserved) {
         this.goToRoom();
       }
       this.clearData();
@@ -526,7 +569,8 @@ export default {
           clientId: null,
           userId: null,
           paymentMethod: ""
-        }
+        },
+        garrisons: []
       };
     },
     goToRoom() {

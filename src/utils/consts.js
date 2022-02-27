@@ -1,53 +1,72 @@
 export const TYPE_IMAGES = [
   {
-    typeId: 'C',
-    type: 'category'
+    typeId: "C",
+    type: "category"
   },
   {
-    typeId: 'D',
-    type: 'dish'
+    typeId: "D",
+    type: "dish"
   }
-]
+];
 
-export const STATUS_ORDER = 
-{
+export const STATUS_ORDER = {
   active: "Active",
   cancelled: "Canceled",
   close: "Close",
-  delivered: "Delivered",
-}
+  delivered: "Delivered"
+};
+
+export const LIST_STATUS_ORDER = [
+  {
+    status: "Active",
+    color: "green"
+  },
+  {
+    status: "Canceled",
+    color: "red"
+  },
+  {
+    status: "Close",
+    color: "teal"
+  },
+  {
+    status: "Delivered",
+    color: "warning"
+  }
+];
 
 export const PAYMENT_METHODS = [
   {
     paymentMethod: "Efectivo",
     paymentMethodId: "E",
+    color: "green"
   },
   {
     paymentMethod: "Tarjeta",
-    paymentMethodId: "T"
+    paymentMethodId: "T",
+    color: "teal"
   },
   {
     paymentMethod: "Cheque",
-    paymentMethodId: "C"
-  },
-]
+    paymentMethodId: "C",
+    color: "warning"
+  }
+];
 
-export const DATA_ERROR = {  
-    isOpen: false,
-    errors: [],
-    title: "Para continuar necesita resolver los siguientes errores",
-    modalType: "error"  
-}
+export const DATA_ERROR = {
+  isOpen: false,
+  errors: [],
+  title: "Para continuar necesita resolver los siguientes errores",
+  modalType: "error"
+};
 
 export const APPROVALS = {
-  DISH: 'DISH',
-  INGREDIENTS : 'INGREDIENTS'
-}
+  DISH: "DISH",
+  INGREDIENTS: "INGREDIENTS"
+};
 
 export const RULES = {
-  required: value => !!value || 'El valor es requerido',
+  required: value => !!value || "El valor es requerido",
   min: (num, min) => num >= min || `El valor minimo es ${min}`,
-  len: (num, min) => num >= min || `La cantidad minima de letras es ${min}`,
-}
-
-
+  len: (num, min) => num >= min || `La cantidad minima de letras es ${min}`
+};

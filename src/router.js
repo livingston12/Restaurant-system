@@ -4,13 +4,14 @@ import RoomPage from "./views/Rooms/Room";
 import MenuPage from "./views/Menus/Menu";
 import Inventory from "./views/Inventories/Inventory";
 import ReportSales from "./views/Reports/ReportSales";
+import Categories from './views/Maintenance/Categories';
 
 Vue.use(VueRouter);
 
 const routes = [
   {
     name: "Home",
-    path: "/" 
+    path: "/"
   },
   {
     name: "Room",
@@ -29,14 +30,19 @@ const routes = [
   },
   {
     name: "ReportSales",
-    path: "/reportsales",
+    path: "/report/sales",
     component: ReportSales
   },
+  {
+    name: "Categories",
+    path: "/maintenance/Categories",
+    component: Categories
+  }
 ];
 
 const router = new VueRouter({
-  mode: "history",
-  base: process.env.BASE_URL,
+  mode: "hash",
+  base: `/`,
   routes
 });
 

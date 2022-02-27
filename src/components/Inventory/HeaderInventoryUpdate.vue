@@ -31,7 +31,7 @@
         </v-card-title>
         <v-container fluid>
           <v-row dense>
-            <v-col sm="6" cols="12">
+            <v-col sm="5" cols="12">
               <v-text-field
                 ref="dish"
                 :rules="[rules.required, rules.len(currentData.dish.length, 3)]"
@@ -42,7 +42,7 @@
                 dense
               ></v-text-field>
             </v-col>
-            <v-col sm="6" cols="12">
+            <v-col sm="5" cols="12">
               <v-autocomplete
                 ref="category"
                 :rules="[rules.required]"
@@ -54,6 +54,14 @@
                 required
               />
             </v-col>
+            <v-col sm="2" cols="12">
+              <v-switch                
+                inset
+                v-model="currentData.needGarrison"
+                label="Requiere guarnicion"
+                class="pt-0 mt-0  center-input"
+              ></v-switch>
+            </v-col>
           </v-row>
           <v-row dense>
             <v-col md="3" sm="6" class="py-0" cols="12">
@@ -63,7 +71,7 @@
                 outlined
                 dense
                 @keypress="isNumbered($event)"
-              ></v-text-field>
+              />
             </v-col>
             <v-col md="3" sm="6" class="py-0" cols="12">
               <v-text-field
@@ -75,7 +83,7 @@
                 required
                 dense
                 @keypress="isNumbered($event)"
-              ></v-text-field>
+              />
             </v-col>
             <v-col md="6" sm="12" class="py-0" cols="12">
               <v-textarea
@@ -93,7 +101,8 @@
           <span class="text-h5">Ingregientes del plato</span>
           <v-btn
             color="green"
-            class="mb-2 float-right"
+            class="mb-1 float-right"
+            :disabled="currentData.needGarrison"
             @click="updateIngredient(null)"
           >
             Agregar ingrediente
@@ -278,7 +287,8 @@ export default {
         price: 0,
         quantity: 0,
         expirationDate: null,
-        categoryId: 0
+        categoryId: 0,
+        needGarrison: false
       },
       isLoading: false,
       formHasErrors: false
@@ -311,7 +321,8 @@ export default {
         price: 0,
         quantity: 0,
         expirationDate: null,
-        categoryId: 0
+        categoryId: 0,
+        needGarrison: false
       }),
         (this.ingredients = []);
     },
@@ -347,7 +358,6 @@ export default {
           this.dataError.isOpen = true;
           this.dataError.errors.push(`Error inesperado: ${er}`);
         });
-        
 
       if (data.length !== 0) {
         if (data.isUpdate) {
@@ -392,7 +402,7 @@ export default {
         quantityRequired: 0
       };
       if (ingredient) {
-        data = {...ingredient};
+        data = { ...ingredient };
       }
       this.currentIngredient = data;
       this.isUpdateIngredient = !this.isUpdateIngredient;

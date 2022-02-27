@@ -1,27 +1,21 @@
 <template>
-  <v-card
-    elevation="14"
-    shaped
-    outlined
-    class="mx-auto"
-  >
+  <v-card elevation="14" shaped outlined class="mx-auto">
     <v-row class="pl-4">
-      <v-col md="5">
+      <v-col md="6">
         <MenuDetail :tableId="tableId" :table="table" />
       </v-col>
-      <v-col md="7">
+      <v-col md="6">
         <v-tabs
           v-model="currentTab"
           class="primary"
           centered
-          background-color="primary"          
+          background-color="primary"
         >
           <v-tab v-for="Menu in menus" :key="Menu.menuId">
             {{ Menu.menu }}
           </v-tab>
         </v-tabs>
         <v-tabs-items v-model="currentTab">
-          
           <v-tab-item v-for="Menu in menus" :key="Menu.menuId">
             <v-card flat>
               <Category :menuId="Menu.menuId" :tableId="tableId" />
@@ -49,7 +43,7 @@ export default {
       currentTab: 0,
       menus: null,
       tableId: 0,
-      table: '',
+      table: ""
     };
   },
   mounted() {
@@ -72,15 +66,8 @@ export default {
     ...mapGetters("api", ["allMenus", "getCurrentTableId", "getCurrentTable"]),
     getMenuData() {
       this.isLoading = true;
-      let menus = this.allMenus();
-      if (
-        menus === undefined ||
-        menus.expirationDate === undefined ||
-        menus.expirationDate < new Date()
-      ) {
-        this.getMenus();
-        menus = this.allMenus();
-      }
+      this.getMenus();
+      const menus = this.allMenus();
       this.menus = menus.list ? menus.list : [];
       this.isLoading = false;
     }

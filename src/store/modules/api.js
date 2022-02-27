@@ -33,7 +33,7 @@ const state = {
   allTotalTables: [],
   allTotalDelivery: [],
   listInvoices: [],
-  rooms: [],
+  rooms: []
 };
 
 const getters = {
@@ -50,7 +50,7 @@ const getters = {
     return state.ordersItems.filter(x => x.tableId === state.currentTableId);
   },
   allRooms: state => state.rooms,
-  getOrderItem(state, dishId) {
+  GetOrderItem(state, dishId) {
     return state.ordersItems.find(
       x => x.dishId === dishId && x.tableId === state.currentTableId
     );
@@ -60,7 +60,7 @@ const getters = {
   getCurrentTableId: state => state.currentTableId,
   getCurrentTable: state => state.currentTable,
   getCurrentTableData: state => state.currentTableData,
-  urlPandora: state => state.urlPandora,
+  urlPandora: () => process.env.VUE_APP_PANDORA_API_URL,
   listOrderByTables: state => state.allTotalTables,
   listOrderByDelivery: state => state.allTotalDelivery,
   listInvoices: state => state.listInvoices
@@ -69,7 +69,7 @@ const getters = {
 const actions = {
   getMenus({ commit }) {
     axios
-      .get(`${state.urlPandora}/menus`, {
+      .get(`${process.env.VUE_APP_PANDORA_API_URL}/menus`, {
         params: {
           restaurantId: state.currentUser.restaurantId
         }
@@ -82,25 +82,32 @@ const actions = {
       menuId: menuId
     };
     axios
-      .get(`${state.urlPandora}/menus/${menuId}/categories`, {
+      .get(`${process.env.VUE_APP_PANDORA_API_URL}/menus/${menuId}/categories`, {
         params: { params }
       })
       .then(response => commit("SET_CATEGORIES", response.data))
       .catch(err => console.error(err));
   },
   async getListCategories({ commit }) {
+    const restaurantId = state.currentUser.restaurantId; 
     await axios
-      .get(`${state.urlPandora}/Categories`)
+      .get(`${process.env.VUE_APP_PANDORA_API_URL}/Categories/summary/${restaurantId}`)
       .then(response => commit("SET_LIST_CATEGORIES", response.data))
       .catch(err => console.error(err));
   },
   async getDishesByCategory({ commit }, categoryId) {
     await axios
-      .get(`${state.urlPandora}/menus/${categoryId}/Dishes`)
+      .get(`${process.env.VUE_APP_PANDORA_API_URL}/menus/${categoryId}/Dishes`)
       .then(response => commit("SET_DISHES", response.data))
       .catch(err => console.error(err));
   },
-  async getAllDishes({ commit }, pageIndex) {
+  async getDishesByMenu({ commit }, menuId) {
+    await axios
+      .get(`${process.env.VUE_APP_PANDORA_API_URL}/menus/${menuId}/dishesmenu`)
+      .then(response => commit("SET_ALL_DISHES", response.data))
+      .catch(err => console.error(err));
+  },
+  async getDishes({ commit }, pageIndex) {
     let page = 1;
 
     if (pageIndex) {
@@ -108,20 +115,20 @@ const actions = {
     }
 
     await axios
-      .get(`${state.urlPandora}/Dishes?PageIndex=${page}`)
+      .get(`${process.env.VUE_APP_PANDORA_API_URL}/Dishes?PageIndex=${page}`)
       .then(response => commit("SET_ALL_DISHES", response.data))
       .catch(err => console.error(err));
   },
   async getAllClients({ commit }) {
     await axios
-      .get(`${state.urlPandora}/Clients`)
+      .get(`${process.env.VUE_APP_PANDORA_API_URL}/Clients`)
       .then(response => commit("SET_ALL_CLIENTS", response.data))
       .catch(err => console.error(err));
   },
   async getTables({ commit }, tableId) {
     let data = [];
     await axios
-      .get(`${state.urlPandora}/Tables?TableIds=${tableId}`)
+      .get(`${process.env.VUE_APP_PANDORA_API_URL}/Tables?TableIds=${tableId}`)
       .then(response => {
         if (response.status !== 204) {
           data = response.data.list;
@@ -136,23 +143,30 @@ const actions = {
   },
   async getIngredients({ commit }, dishId) {
     await axios
-      .get(`${state.urlPandora}/Dishes/${dishId}/ingredients`)
+      .get(`${process.env.VUE_APP_PANDORA_API_URL}/Dishes/${dishId}/ingredients`)
       .then(response => commit("SET_INGREDIENTS", response.data))
       .catch(err => console.error(err));
   },
   async getAllIngredients({ commit }) {
     const restaurantId = state.currentUser.restaurantId;
     await axios
-      .get(`${state.urlPandora}/Ingredients/summary/${restaurantId}`)
+      .get(`${process.env.VUE_APP_PANDORA_API_URL}/Ingredients/summary/${restaurantId}`)
+      .then(response => commit("SET_ALL_INGREDIENTS", response.data))
+      .catch(err => console.error(err));
+  },
+  async getGarrisons({ commit }) {
+    const restaurantId = state.currentUser.restaurantId;
+    await axios
+      .get(`${process.env.VUE_APP_PANDORA_API_URL}/Ingredients/garrisons/${restaurantId}`)
       .then(response => commit("SET_ALL_INGREDIENTS", response.data))
       .catch(err => console.error(err));
   },
   async getAllRooms({ commit }) {
     const restaurantId = state.currentUser.restaurantId;
     await axios
-    .get(`${state.urlPandora}/Rooms/summary?restaurantId=${restaurantId}`)
-    .then(response => commit("SET_ALL_ROOMS", response.data))
-    .catch(err => console.error(err));
+      .get(`${process.env.VUE_APP_PANDORA_API_URL}/Rooms/summary?restaurantId=${restaurantId}`)
+      .then(response => commit("SET_ALL_ROOMS", response.data))
+      .catch(err => console.error(err));
   },
   async getTotalOrderByTables({ commit }, dates) {
     const restaurantId = state.currentUser.restaurantId;
@@ -174,7 +188,7 @@ const actions = {
 
     await axios
       .get(
-        `${state.urlPandora}/Orders/TotalsByTables?RestaurantId=${restaurantId}${options}`
+        `${process.env.VUE_APP_PANDORA_API_URL}/Orders/TotalsByTables?RestaurantId=${restaurantId}${options}`
       )
       .then(response => commit("SET_ALL_TOTAL_TABLES", response.data))
       .catch(err => console.error(err));
@@ -199,7 +213,7 @@ const actions = {
 
     await axios
       .get(
-        `${state.urlPandora}/Orders/TotalsByDelivery?RestaurantId=${restaurantId}${options}`
+        `${process.env.VUE_APP_PANDORA_API_URL}/Orders/TotalsByDelivery?RestaurantId=${restaurantId}${options}`
       )
       .then(response => commit("SET_ALL_TOTAL_DELIVERY", response.data))
       .catch(err => console.error(err));
@@ -222,7 +236,7 @@ const actions = {
 
     await axios
       .get(
-        `${state.urlPandora}/Invoices?RestaurantId=${state.currentUser.restaurantId}&PageIndex=${page}${options}`
+        `${process.env.VUE_APP_PANDORA_API_URL}/Invoices?RestaurantId=${state.currentUser.restaurantId}&PageIndex=${page}${options}`
       )
       .then(response => commit("SET_INVOICES", response.data))
       .catch(err => console.error(err));
@@ -232,13 +246,13 @@ const actions = {
   },
   getImages({ commit }, data) {
     axios
-      .get(`${state.urlPandora}/Images/${data.directory}/${data.fileName}`)
+      .get(`${process.env.VUE_APP_PANDORA_API_URL}/Images/${data.directory}/${data.fileName}`)
       .then(response => commit("SET_IMAGES", response.data))
       .catch(err => console.error(err));
   },
   async upadateIngredient({ commit }, data) {
     const response = await axios(
-      `${state.urlPandora}/Dishes`,
+      `${process.env.VUE_APP_PANDORA_API_URL}/Dishes`,
       {
         method: "put",
         headers: {
@@ -258,7 +272,7 @@ const actions = {
   },
   async processOrden({ commit }, data) {
     const response = await axios(
-      `${state.urlPandora}/Orders`,
+      `${process.env.VUE_APP_PANDORA_API_URL}/Orders`,
       {
         method: "post",
         headers: {
@@ -277,7 +291,7 @@ const actions = {
   },
   async addDishAsync({ commit }, data) {
     const response = await axios(
-      `${state.urlPandora}/Dishes`,
+      `${process.env.VUE_APP_PANDORA_API_URL}/Dishes`,
       {
         method: "post",
         headers: {
@@ -296,7 +310,7 @@ const actions = {
   },
   async addDishDetailAsync({ dispatch }, data) {
     const response = await axios(
-      `${state.urlPandora}/Dishes/details`,
+      `${process.env.VUE_APP_PANDORA_API_URL}/Dishes/details`,
       {
         method: "post",
         headers: {
@@ -319,6 +333,9 @@ const actions = {
   },
   updateOrderQuantity({ commit }, dish) {
     commit("SET_ORDER_QUANTITY", dish);
+  },
+  updateOrderNote({ commit }, dish) {
+    commit("SET_ORDER_NOTE", dish);
   },
   setCurrentTableId({ commit }, tableId) {
     commit("SET_CURRENT_TABLEID", tableId);
@@ -358,7 +375,7 @@ const mutations = {
   },
   SET_ORDER_ITEMS(state, dish) {
     const existOrder = state.ordersItems
-      ? getters.getOrderItem(state, dish.dishId)
+      ? getters.GetOrderItem(state, dish.dishId)
       : [];
     if (existOrder) {
       existOrder.quantity += parseInt(dish.quantity);
@@ -368,7 +385,7 @@ const mutations = {
     }
   },
   SET_ORDER_QUANTITY(state, item) {
-    const existsOrder = getters.getOrderItem(state, item.id);
+    const existsOrder = getters.GetOrderItem(state, item.id);
     if (existsOrder) {
       mutations.SET_ORDER_ITEM_UPDATED(existsOrder, item.quantity);
     }
@@ -376,6 +393,15 @@ const mutations = {
   SET_ORDER_ITEM_UPDATED(orderItem, quantity) {
     orderItem.quantity = parseInt(quantity);
     orderItem.total = quantity * orderItem.price;
+  },
+  SET_ORDER_NOTE(state, item) {
+    const existsOrder = getters.GetOrderItem(state, item.dishId);
+    if (existsOrder) {
+      mutations.SET_ORDER_ITEM_UPDATED_NOTE(existsOrder, item.note);
+    }
+  },
+  SET_ORDER_ITEM_UPDATED_NOTE(orderItem, note) {
+    orderItem.note = note;
   },
   SET_CURRENT_TABLEID(state, tableId) {
     state.currentTableId = tableId;

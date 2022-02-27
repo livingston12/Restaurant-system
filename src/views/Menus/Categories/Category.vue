@@ -9,16 +9,8 @@
       class="mb-n3"
       @change="getCurrentProduct"
     />
-    <v-sheet
-      class="mx-auto"
-      elevation="8"
-      max-width="800"
-    >
-      <v-slide-group 
-        v-model="currentCategory"
-        class="pa-4"
-        show-arrows
-      >
+    <v-sheet class="mx-auto " elevation="8" max-width="800">
+      <v-slide-group v-model="currentCategory" class="pa-1 " show-arrows>
         <v-slide-item
           v-for="category in categories"
           :key="category.categoryId"
@@ -26,7 +18,10 @@
           :value="category.categoryId"
         >
           <v-card
-            v-if=" (isFilteredDish && category.categoryId == currentCategory) || !isFilteredDish"
+            v-if="
+              (isFilteredDish && category.categoryId == currentCategory) ||
+                !isFilteredDish
+            "
             :color="active ? 'primary' : 'grey'"
             class="ma-4 rounded-b-xl"
             height="200"
@@ -42,13 +37,9 @@
               position="bottom"
             />
             <v-card-title class="text-center white--text">
-              {{category.category}}
+              {{ category.category }}
             </v-card-title>
-            <v-row
-              class="fill-height"
-              align="center"
-              justify="center"
-            >
+            <v-row class="fill-height" align="center" justify="center">
               <v-scale-transition>
                 <v-icon
                   v-if="active"
@@ -62,24 +53,14 @@
         </v-slide-item>
       </v-slide-group>
       <v-expand-transition>
-        <v-sheet
-          v-if="currentCategory != null"
-          height="300"
-          tile
-        >
-          <v-row
-            class=""
-            align="center"
-            justify="center"
-          >
-            <CategoryDish
-              :categoryId="currentCategory"
-              :urlPandora="urlPandora"
-              :typeImages="typeImages"
-              :dishId="dishId"
-              :tableId="tableId"
-            />
-          </v-row>
+        <v-sheet v-if="currentCategory != null">
+          <CategoryDish
+            :categoryId="currentCategory"
+            :urlPandora="urlPandora"
+            :typeImages="typeImages"
+            :dishId="dishId"
+            :tableId="tableId"
+          />
         </v-sheet>
       </v-expand-transition>
     </v-sheet>
@@ -90,10 +71,10 @@
 import { mapActions, mapGetters, mapState } from "vuex";
 import { getURLImage } from "@/utils/core";
 import { TYPE_IMAGES } from "@/utils/consts";
-import CategoryDish from './CategoryDish.vue'
+import CategoryDish from "./CategoryDish.vue";
 export default {
   name: "Category",
-  components: {CategoryDish},
+  components: { CategoryDish },
   props: {
     menuId: {
       type: Number,
@@ -101,19 +82,19 @@ export default {
       default: () => 1
     },
     tableId: {
-       type: Number,
+      type: Number,
       required: true,
       default: () => 0
-    },
+    }
   },
   computed: {
     ...mapState("api", ["urlPandora"]),
     categoryIsSelect() {
       return this.currentCategory != null;
     },
-     isFilteredDish() {
-       return this.dishId !== 0;
-    },
+    isFilteredDish() {
+      return this.dishId !== 0;
+    }
   },
   data() {
     return {
@@ -125,57 +106,48 @@ export default {
       dishes: {},
       typeImages: TYPE_IMAGES,
       images: {},
-      dishId: 0,
+      dishId: 0
     };
   },
-  mounted() {
+  async mounted() {
     let products = this.products;
     this.getCategoryData(this.menuId);
-    this.getAllDishes();
-    if(products.length === 0) {
+    await this.getDishesByMenu(this.menuId);
+    if (products.length === 0) {
       const { list } = this.listDishes();
       products = list.map(product => {
         return {
           text: product.dish,
           value: `${product.categoryId},${product.dishId}`
-        }
-      })
+        };
+      });
     }
-    products.unshift(
-        { 
-          text: "Todos",
-          value: "0"
-        });
+    products.unshift({
+      text: "Todos",
+      value: "0"
+    });
     this.products = products;
   },
   methods: {
-    ...mapActions("api", ["getCategories", "getImages", "getAllDishes"]),
+    ...mapActions("api", ["getCategories", "getImages", "getDishesByMenu"]),
     ...mapGetters("api", ["allCategories", "allImages", "listDishes"]),
     getURLImage: getURLImage,
     getCategoryData(menuId) {
       this.isLoading = true;
-      let categories = this.allCategories();
-      if (
-        categories === undefined ||
-        categories.expirationDate === undefined ||
-        categories.expirationDate < new Date() ||
-        categories === null
-      ) {
-        this.getCategories(menuId);
-        categories = this.allCategories();
-      }
+      this.getCategories(menuId);
+      const categories = this.allCategories();
       this.categories = categories.list ? categories.list : [];
       this.isLoading = false;
     },
-    getCurrentProduct () {
-      const [ category, dishId ] = this.currentProduct.split(",");
+    getCurrentProduct() {
+      const [category, dishId] = this.currentProduct.split(",");
       if (category === "0") {
-          this.currentCategory = null;
-          this.dishId = 0;
+        this.currentCategory = null;
+        this.dishId = 0;
       } else {
         this.currentCategory = parseInt(category);
         this.dishId = parseInt(dishId);
-      }      
+      }
     }
   }
 };
@@ -184,5 +156,8 @@ export default {
 <style scoped>
 .selectedCategory {
   border: 1px solid #1976d2;
+}
+.center {
+  justify-content: center !important;
 }
 </style>

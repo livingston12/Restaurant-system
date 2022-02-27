@@ -208,12 +208,12 @@ export default {
     },
   },
   async mounted() {
-    await this.getAllDishes();
+    await this.getDishes();
     this.data = this.listDishes();
   },
   methods: {
     ...mapGetters("api", ["currentIngredients", "listDishes", "urlPandora"]),
-    ...mapActions("api", ["getIngredients", "getAllDishes"]),
+    ...mapActions("api", ["getIngredients", "getDishes"]),
     isNumbered: isNumbered,
     numberFormat: numberFormat,
     async actionExpand(data) {
@@ -228,7 +228,7 @@ export default {
     },
     async closeDialog(open) {
       this.isUpdateHeader = open;
-      await this.getAllDishes();
+      await this.getDishes();
       this.data = this.listDishes();
     },
     closeModal(open) {
@@ -339,9 +339,9 @@ export default {
       }
       this.dataError.isOpen = true;
     },
-    async closeModalError(isGoingTo) {
-      if (isGoingTo && this.isUpdate) {
-        await this.getAllDishes();
+    async closeModalError() {
+      if (this.dataError.color === 'green' && this.isUpdate) {
+        await this.getDishes();
         this.data = this.listDishes();
       }
       this.clearData();
@@ -352,7 +352,7 @@ export default {
       this.expanded = [];
     },
     async paginateUpdate(page) {
-      await this.getAllDishes(page);
+      await this.getDishes(page);
       this.data = this.listDishes();
     },
   }
