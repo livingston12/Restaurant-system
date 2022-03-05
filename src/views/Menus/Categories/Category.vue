@@ -23,7 +23,7 @@
                 !isFilteredDish
             "
             :color="active ? 'primary' : 'grey'"
-            class="ma-4 rounded-b-xl"
+            class="ma-2 rounded-b-xl"
             height="200"
             width="180"
             @click="toggle"

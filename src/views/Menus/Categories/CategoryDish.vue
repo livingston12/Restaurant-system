@@ -1,13 +1,13 @@
 <template>
-  <v-row v-if="hasDishes" justify="center">
+  <v-row v-if="hasDishes" justify="center" no-gutters>
     <v-col
       cols="12"
       sm="4"
       v-for="dish in dishesItem"
       :key="dish.dishId"
-      class="py-100"
+      class="px-1 py-1"
     >
-      <v-card class="rounded-t-xl " min-width="200" max-width="200" elevation="8">
+      <v-card class="rounded-t-xl" elevation="8" height="auto">
         <template slot="progress">
           <v-progress-linear color="deep-purple" height="10" indeterminate />
         </template>
@@ -16,13 +16,15 @@
           :src="getURLImage('D', dish.dish, urlPandora, typeImages)"
           min-height="200"
           max-height="200"
-          width="200"
           position="bottom"
           @click="addDish(dish)"
         />
-        <v-card-title class="text-center white--text primary pl-0 pr-0">
+        <v-card-title
+          class="text-center white--text font-weight-bold primary pl-1 pr-1"
+          style="white-space: nowrap; overflow: hidden;"
+        >
           {{ dish.dish }} <br />
-          ${{ dish.price }}
+          $ {{ numberFormat(dish.price, 2) }}
         </v-card-title>
       </v-card>
     </v-col>
@@ -44,7 +46,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import { getURLImage, getStringBySeparator } from "@/utils/core";
+import { getURLImage, getStringBySeparator, numberFormat } from "@/utils/core";
 import Garrisons from "../../../components/categories/Garrison";
 
 export default {
@@ -107,6 +109,7 @@ export default {
     ...mapGetters("api", ["allDishesByCategory", "allOrderItems"]),
     getURLImage: getURLImage,
     getStringBySeparator: getStringBySeparator,
+    numberFormat: numberFormat,
     async getDishesAsync() {
       this.isLoadingDishes = true;
       await this.getDishesByCategory(this.categoryId);
@@ -159,8 +162,8 @@ export default {
       let note = "";
       if (dish.needGarrison) {
         garrisons = this.garrisons;
-        const ingredients = garrisons.map(x=> x.ingredient);
-        note = 'Guarniciones: ' + this.getStringBySeparator(ingredients, ',');
+        const ingredients = garrisons.map(x => x.ingredient);
+        note = "Guarniciones: " + this.getStringBySeparator(ingredients, ",");
       }
 
       const currentDish = {

@@ -27,18 +27,20 @@
 
       <v-list-group
         :value="false"
-        prepend-icon="mdi-chart-bar"
+        :prepend-icon="detail.icon"
         activeClass="white--text"
+        v-for="detail in menuDetail"
+        :key="detail"
       >
         <template v-slot:activator>
-          <v-list-item-title>Reportes</v-list-item-title>
+          <v-list-item-title>{{ detail.title }}</v-list-item-title>
         </template>
 
         <v-list-item
           @click="goToPage(view)"
           :key="i"
           link
-          v-for="([icon, title, view], i) in reports"
+          v-for="({ icon, title, view }, i) in detail.subMenus"
         >
           <v-list-item-title v-text="title"></v-list-item-title>
 
@@ -71,37 +73,48 @@ export default {
   },
   computed: {
     Restaurant() {
-      return this.currentUser().restaurant
-    },
+      return this.currentUser().restaurant;
+    }
   },
   data() {
     return {
       data: [
-        /*{
-          icon: "mdi-wrench",
-          title: "Mantenimientos"
-        },
-        {
-          icon: "mdi-magnify",
-          title: "Consultas"
-        },
-        {
-          icon: "mdi-credit-card",
-          title: "Venta rapida"
-        },*/
         {
           icon: "mdi-table",
           title: "Mesas",
           view: "Room"
-        },
-        {
-          icon: "mdi-food",
-          title: "Inventario",
-          view: "Inventory"
         }
       ],
       drawer: this.isOpen,
-      reports: [["mdi-cash", "Reporte de ventas", "ReportSales"]]
+      menuDetail: [
+        {
+          title: "Inventario",
+          icon: "mdi-noodles",
+          subMenus: [
+            {
+              icon: "mdi-food",
+              title: "Platos",
+              view: "Inventory"
+            },
+            {
+              icon: "mdi-shaker",
+              title: "Mise place",
+              view: "InventoryMisePlace"
+            }
+          ]
+        },
+        {
+          title: "Reportes",
+          icon: "mdi-chart-bar",
+          subMenus: [
+            {
+              icon: "mdi-cash",
+              title: "Reporte de ventas",
+              view: "ReportSales"
+            }
+          ]
+        }
+      ]
     };
   },
   methods: {
