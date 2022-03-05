@@ -281,7 +281,7 @@ export default {
           align: "start",
           sortable: false,
           value: "dish",
-          width: 200,
+          width: 170,
           class: "primary white--text"
         },
         {
@@ -313,7 +313,7 @@ export default {
           align: "start",
           sortable: false,
           value: "note",
-          width: 200,
+          width: 170,
           class: "primary white--text"
         },
         {
@@ -321,7 +321,6 @@ export default {
           align: "center",
           sortable: false,
           value: "dishId",
-          width: 10,
           class: "primary danger--text"
         }
       ]

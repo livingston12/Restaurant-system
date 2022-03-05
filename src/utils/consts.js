@@ -6,6 +6,10 @@ export const TYPE_IMAGES = [
   {
     typeId: "D",
     type: "dish"
+  },
+  {
+    typeId: "I",
+    type: "ingredient"
   }
 ];
 
@@ -52,6 +56,12 @@ export const PAYMENT_METHODS = [
     color: "warning"
   }
 ];
+
+export const INVENTORY_TYPE = {
+  increase: 0,
+  decrease: 1,
+  current: 2
+}
 
 export const DATA_ERROR = {
   isOpen: false,

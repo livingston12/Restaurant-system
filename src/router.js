@@ -3,6 +3,7 @@ import VueRouter from "vue-router";
 import RoomPage from "./views/Rooms/Room";
 import MenuPage from "./views/Menus/Menu";
 import Inventory from "./views/Inventories/Inventory";
+import InventoryMisePlace from "./views/Inventories/InventoryMisePlace";
 import ReportSales from "./views/Reports/ReportSales";
 import Categories from './views/Maintenance/Categories';
 
@@ -27,6 +28,11 @@ const routes = [
     name: "Inventory",
     path: "/inventory",
     component: Inventory
+  },
+  {
+    name: "InventoryMisePlace",
+    path: "/inventory/miseplace",
+    component: InventoryMisePlace
   },
   {
     name: "ReportSales",

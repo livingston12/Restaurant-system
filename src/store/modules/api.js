@@ -5,7 +5,7 @@ import {
   stringToDatetime,
   dateFormat
 } from "@/utils/core";
-import { PAYMENT_METHODS } from "@/utils/consts";
+import { PAYMENT_METHODS, INVENTORY_TYPE } from "@/utils/consts";
 
 const HOURS_TO_ADD = 1;
 
@@ -55,6 +55,10 @@ const getters = {
       x => x.dishId === dishId && x.tableId === state.currentTableId
     );
   },
+  GetIngredientItem(state, ingredientId) {
+    const listIngredient = state.allIngredients;
+    return listIngredient.find(x => x.ingredientId === ingredientId);
+  },    
   restaurantName: state => state.currentUser.restaurant,
   currentUser: state => state.currentUser,
   getCurrentTableId: state => state.currentTableId,
@@ -82,16 +86,21 @@ const actions = {
       menuId: menuId
     };
     axios
-      .get(`${process.env.VUE_APP_PANDORA_API_URL}/menus/${menuId}/categories`, {
-        params: { params }
-      })
+      .get(
+        `${process.env.VUE_APP_PANDORA_API_URL}/menus/${menuId}/categories`,
+        {
+          params: { params }
+        }
+      )
       .then(response => commit("SET_CATEGORIES", response.data))
       .catch(err => console.error(err));
   },
   async getListCategories({ commit }) {
-    const restaurantId = state.currentUser.restaurantId; 
+    const restaurantId = state.currentUser.restaurantId;
     await axios
-      .get(`${process.env.VUE_APP_PANDORA_API_URL}/Categories/summary/${restaurantId}`)
+      .get(
+        `${process.env.VUE_APP_PANDORA_API_URL}/Categories/summary/${restaurantId}`
+      )
       .then(response => commit("SET_LIST_CATEGORIES", response.data))
       .catch(err => console.error(err));
   },
@@ -119,6 +128,16 @@ const actions = {
       .then(response => commit("SET_ALL_DISHES", response.data))
       .catch(err => console.error(err));
   },
+  async getAllDishes({ commit }) {
+    const restaurantId = state.currentUser.restaurantId;
+
+    await axios
+      .get(
+        `${process.env.VUE_APP_PANDORA_API_URL}/Dishes/summary/${restaurantId}`
+      )
+      .then(response => commit("SET_ALL_DISHES", response.data))
+      .catch(err => console.error(err));
+  },
   async getAllClients({ commit }) {
     await axios
       .get(`${process.env.VUE_APP_PANDORA_API_URL}/Clients`)
@@ -143,28 +162,36 @@ const actions = {
   },
   async getIngredients({ commit }, dishId) {
     await axios
-      .get(`${process.env.VUE_APP_PANDORA_API_URL}/Dishes/${dishId}/ingredients`)
+      .get(
+        `${process.env.VUE_APP_PANDORA_API_URL}/Dishes/${dishId}/ingredients`
+      )
       .then(response => commit("SET_INGREDIENTS", response.data))
       .catch(err => console.error(err));
   },
   async getAllIngredients({ commit }) {
     const restaurantId = state.currentUser.restaurantId;
     await axios
-      .get(`${process.env.VUE_APP_PANDORA_API_URL}/Ingredients/summary/${restaurantId}`)
+      .get(
+        `${process.env.VUE_APP_PANDORA_API_URL}/Ingredients/summary/${restaurantId}`
+      )
       .then(response => commit("SET_ALL_INGREDIENTS", response.data))
       .catch(err => console.error(err));
   },
   async getGarrisons({ commit }) {
     const restaurantId = state.currentUser.restaurantId;
     await axios
-      .get(`${process.env.VUE_APP_PANDORA_API_URL}/Ingredients/garrisons/${restaurantId}`)
+      .get(
+        `${process.env.VUE_APP_PANDORA_API_URL}/Ingredients/garrisons/${restaurantId}`
+      )
       .then(response => commit("SET_ALL_INGREDIENTS", response.data))
       .catch(err => console.error(err));
   },
   async getAllRooms({ commit }) {
     const restaurantId = state.currentUser.restaurantId;
     await axios
-      .get(`${process.env.VUE_APP_PANDORA_API_URL}/Rooms/summary?restaurantId=${restaurantId}`)
+      .get(
+        `${process.env.VUE_APP_PANDORA_API_URL}/Rooms/summary?restaurantId=${restaurantId}`
+      )
       .then(response => commit("SET_ALL_ROOMS", response.data))
       .catch(err => console.error(err));
   },
@@ -246,7 +273,9 @@ const actions = {
   },
   getImages({ commit }, data) {
     axios
-      .get(`${process.env.VUE_APP_PANDORA_API_URL}/Images/${data.directory}/${data.fileName}`)
+      .get(
+        `${process.env.VUE_APP_PANDORA_API_URL}/Images/${data.directory}/${data.fileName}`
+      )
       .then(response => commit("SET_IMAGES", response.data))
       .catch(err => console.error(err));
   },
@@ -267,6 +296,27 @@ const actions = {
 
     if (response.status === 201) {
       commit("SET_INGREDIENTS", response.data);
+    }
+    return response;
+  },
+  async updateInventoryIngredient({ commit }, data) {
+    const response = await axios(
+      `${process.env.VUE_APP_PANDORA_API_URL}/Ingredients/inventory`,
+      {
+        method: "put",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        data: data
+      },
+      {
+        responseType: "json"
+      }
+    );
+
+    if (response.status === 200) {
+      const result = {response: response.data, data};
+      commit("SET_INVENTORY_INGREDIENT", result);
     }
     return response;
   },
@@ -382,6 +432,22 @@ const mutations = {
       existOrder.total = existOrder.quantity * existOrder.price;
     } else {
       state.ordersItems.push(dish);
+    }
+  },
+  SET_INVENTORY_INGREDIENT(state, ingredient) {
+    const {data, response } = ingredient;
+    const existIngredient = state.allIngredients
+      ? getters.GetIngredientItem(state, data.ingredientId)
+      : null;
+    if (existIngredient && response.isUpdate) {
+      if (
+        INVENTORY_TYPE.increase == data.type ||
+        INVENTORY_TYPE.decrease == data.type
+      ) {
+        existIngredient.quantity += parseInt(response.statusCode);
+      } else {
+        existIngredient.quantity = parseInt(response.statusCode);
+      }
     }
   },
   SET_ORDER_QUANTITY(state, item) {
